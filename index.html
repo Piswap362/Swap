@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PiSwap Exchange</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6A0DAD, #4B0082); /* درجات البنفسجي */
+            color: white;
+            text-align: center;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+        }
+        .swap-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+            position: relative;
+        }
+        .swap-box::after {
+            content: "🚧 Platform Under Maintenance 🚧";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 10px;
+            color: #FFD700;
+            font-weight: bold;
+            text-align: center;
+            width: 80%;
+        }
+        .swap-input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
+        }
+        .swap-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #FFD700;
+            color: black;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: not-allowed;
+            margin-top: 10px;
+        }
+        .maintenance-message {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>PiSwap Exchange</h2>
+        <p>🚀 Our decentralized platform will launch once we reach the roadmap milestone! Stay tuned.</p>
+
+        <div class="swap-box">
+            <p>Exchange Pi Network Tokens</p>
+            <input type="text" class="swap-input" placeholder="Enter amount" disabled>
+            <button class="swap-btn" disabled>Swap (Coming Soon)</button>
+        </div>
+
+        <div class="maintenance-message">
+            ⚠️ **Platform is under maintenance.** Transactions are disabled until the official launch.
+        </div>
+    </div>
+</body>
+</html>
