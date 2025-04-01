@@ -3,93 +3,1681 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PiSwap Exchange</title>
+    <title>Pi Swap - Decentralized Exchange</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
+        :root {
+            --pi-primary: #1EC0C0;  /* Pi Network teal */
+            --pi-secondary: #2ECC71; /* Pi Network green */
+            --pi-accent: #F39C12;   /* Pi Network orange */
+            --pi-dark: #1A3A4F;     /* Dark blue from Pi Network */
+            --pi-light: #E8F4F8;    /* Light background from Pi Network */
+            --text-light: #FFFFFF;
+            --text-dark: #2C3E50;   /* Dark text from Pi Network */
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --error-color: #FF5252;
+            --gradient-primary: linear-gradient(135deg, var(--pi-primary) 0%, var(--pi-accent) 100%);
+            --gradient-dark: linear-gradient(135deg, var(--pi-dark) 0%, var(--pi-primary) 100%);
+            --modal-backdrop: rgba(0, 0, 0, 0.8);
+        }
+        
+        /* Floating Action Button */
+        .fab-container {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 15px;
+        }
+        
+        .fab-main {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            color: var(--pi-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+        
+        .fab-main:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .fab-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-dark);
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+        
+        .fab-container.open .fab-item {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        .fab-item:nth-child(1) { transition-delay: 0ms; }
+        .fab-item:nth-child(2) { transition-delay: 50ms; }
+        .fab-item:nth-child(3) { transition-delay: 100ms; }
+        
+        /* Button Links Section */
+        .button-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .link-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(30, 192, 192, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+        
+        .link-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .link-button i {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--pi-accent);
+        }
+        
+        .link-button span {
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        /* Enhanced Token Select Modal */
+        .token-modal .modal-content {
+            max-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            width: 90%;
+            max-width: 350px;
+        }
+        
+        .token-list-container {
+            overflow-y: auto;
+            flex: 1;
+            margin-top: 15px;
+            max-height: 50vh;
+        }
+        
+        .token-category {
+            margin-bottom: 15px;
+        }
+        
+        .token-category-title {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Price Chart Placeholder */
+        .price-chart {
+            height: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .price-chart::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Swap Details */
+        .swap-detail-row {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        
+        .swap-detail-row:last-child {
+            border-bottom: none;
+        }
+        
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #6A0DAD, #4B0082); /* درجات البنفسجي */
-            color: white;
-            text-align: center;
+            background-color: var(--pi-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
         }
-        .container {
+        
+        .scroll-container {
             max-width: 400px;
-            margin: auto;
+            margin: 0 auto;
             padding: 20px;
+            padding-bottom: 100px;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        .swap-box {
+        
+        .connect-wallet {
+            background-color: rgba(30, 192, 192, 0.3);
+            color: var(--text-light);
+            border: 2px solid var(--pi-primary);
+            padding: 14px 24px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            backdrop-filter: blur(5px);
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+        
+        .connect-wallet:hover {
+            background-color: rgba(30, 192, 192, 0.4);
+        }
+        
+        .dex-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .dex-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--pi-accent);
+        }
+        
+        .dex-switch {
             background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
-            margin-top: 20px;
-            position: relative;
+            border-radius: 12px;
+            padding: 5px;
+            display: flex;
         }
-        .swap-box::after {
-            content: "🚧 Platform Under Maintenance 🚧";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 15px;
-            font-size: 16px;
-            border-radius: 10px;
-            color: #FFD700;
-            font-weight: bold;
-            text-align: center;
-            width: 80%;
-        }
-        .swap-input {
-            width: 90%;
-            padding: 10px;
-            margin: 10px 0;
+        
+        .dex-switch-btn {
+            background: none;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            color: var(--text-light);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .dex-switch-btn.active {
+            background: var(--pi-primary);
+            color: var(--pi-dark);
+            font-weight: 600;
+        }
+        
+        .swap-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(30, 192, 192, 0.2);
+            transition: var(--transition);
+        }
+        
+        .swap-container:hover {
+            border-color: rgba(30, 192, 192, 0.4);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .swap-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .swap-title {
+            font-weight: 600;
+            color: var(--pi-accent);
+        }
+        
+        .swap-settings {
+            color: var(--pi-primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .swap-settings:hover {
+            transform: rotate(30deg);
+        }
+        
+        .token-input {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+        
+        .token-input:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .token-input-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .token-input-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .token-amount {
+            font-size: 24px;
+            font-weight: 600;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            width: 60%;
+        }
+        
+        .token-amount:focus {
             outline: none;
         }
-        .swap-btn {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background: #FFD700;
-            color: black;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: not-allowed;
-            margin-top: 10px;
-        }
-        .maintenance-message {
+        
+        .token-select {
+            display: flex;
+            align-items: center;
             background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .token-select:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .token-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: var(--pi-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .token-name {
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        .swap-arrow {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        .swap-arrow-btn {
+            background: var(--pi-dark);
+            border: 2px solid var(--pi-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--pi-primary);
+            transform: rotate(90deg);
+            transition: var(--transition);
+            z-index: 2;
+        }
+        
+        .swap-arrow-btn:hover {
+            transform: rotate(90deg) scale(1.1);
+            background: var(--pi-primary);
+            color: var(--pi-dark);
+        }
+        
+        .swap-arrow::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+        
+        .swap-details {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
             padding: 15px;
             margin-top: 15px;
-            border-radius: 10px;
-            font-size: 14px;
+        }
+        
+        .swap-button {
+            background: var(--gradient-primary);
+            color: var(--pi-dark);
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .swap-button::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0),
+                rgba(255, 255, 255, 0.3),
+                rgba(255, 255, 255, 0)
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+        
+        .swap-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .swap-button:disabled {
+            background: var(--pi-dark);
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .swap-button:disabled::after {
+            display: none;
+        }
+        
+        .tokens-list {
+            margin-top: 30px;
+        }
+        
+        .tokens-list-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--pi-accent);
+        }
+        
+        .token-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .token-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .token-item-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--pi-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 16px;
+        }
+        
+        .token-item-details {
+            flex: 1;
+        }
+        
+        .token-item-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .token-item-balance {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .bottom-menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 58, 79, 0.9);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(30, 192, 192, 0.3);
+            z-index: 1000;
+            max-width: 400px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+        
+        .menu-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            gap: 5px;
+            text-decoration: none;
+            position: relative;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: var(--transition);
+            opacity: 0.7;
+            flex: 1;
+        }
+        
+        .menu-btn:hover {
+            opacity: 1;
+            background: rgba(30, 192, 192, 0.1);
+        }
+        
+        .menu-btn i {
+            font-size: 20px;
+        }
+        
+        .menu-btn.active {
+            opacity: 1;
+            font-weight: 600;
+        }
+        
+        .menu-btn.active::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background-color: var(--pi-accent);
+            border-radius: 3px;
+        }
+        
+        /* Enhanced Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--modal-backdrop);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+            backdrop-filter: blur(5px);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background: var(--pi-dark);
+            border-radius: 16px;
+            padding: 25px;
+            width: 85%;
+            max-width: 350px;
+            border: 2px solid var(--pi-primary);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            background: var(--pi-dark);
+            padding: 10px 0;
+            z-index: 1;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--pi-accent);
+        }
+        
+        .close-modal {
+            background: var(--pi-primary);
+            color: var(--pi-dark);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .close-modal:hover {
+            background: var(--pi-accent);
+            transform: rotate(90deg);
+        }
+        
+        .search-token {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(30, 192, 192, 0.3);
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        .search-token:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--pi-primary);
+        }
+        
+        /* Coming Soon Modal Specific Styles */
+        .coming-soon-modal .modal-content {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .coming-soon-modal i {
+            font-size: 48px;
+            color: var(--pi-accent);
+            margin-bottom: 15px;
+        }
+        
+        .coming-soon-modal h3 {
+            margin-bottom: 10px;
+            color: var(--pi-accent);
+        }
+        
+        .coming-soon-modal p {
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        /* Transaction Confirmation Modal */
+        .confirmation-modal .modal-content {
+            max-width: 380px;
+        }
+        
+        .confirmation-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .confirmation-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--pi-dark);
+        }
+        
+        .confirmation-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--pi-accent);
+        }
+        
+        .confirmation-subtitle {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+        
+        .confirmation-details {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .confirmation-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .confirmation-row:last-child {
+            border-bottom: none;
+        }
+        
+        .confirmation-label {
+            opacity: 0.7;
+        }
+        
+        .confirmation-value {
+            font-weight: 600;
+        }
+        
+        .confirmation-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .confirmation-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+        
+        .confirmation-btn-primary {
+            background: var(--gradient-primary);
+            color: var(--pi-dark);
+        }
+        
+        .confirmation-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+        }
+        
+        .confirmation-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Settings Modal */
+        .settings-modal .modal-content {
+            max-width: 380px;
+        }
+        
+        .settings-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-label {
+            font-weight: 500;
+        }
+        
+        .settings-description {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background: var(--gradient-primary);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Slippage Settings */
+        .slippage-options {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .slippage-option {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .slippage-option.active {
+            background: var(--gradient-primary);
+            color: var(--pi-dark);
+            font-weight: 600;
+        }
+        
+        .slippage-custom {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid transparent;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+        
+        .slippage-custom:focus {
+            outline: none;
+            border-color: var(--pi-primary);
+        }
+        
+        /* Transaction Status Modal */
+        .status-modal .modal-content {
+            max-width: 380px;
+            text-align: center;
+        }
+        
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 20px;
+            background: var(--gradient-primary);
+            color: var(--pi-dark);
+        }
+        
+        .status-icon.error {
+            background: var(--error-color);
+        }
+        
+        .status-icon.warning {
+            background: var(--warning-color);
+            color: var(--pi-dark);
+        }
+        
+        .status-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .status-message {
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .status-action {
+            margin-top: 20px;
+        }
+        
+        .status-link {
+            color: var(--pi-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .status-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 350px) {
+            .dex-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .dex-switch {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .button-links {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 90%;
+                padding: 20px;
+            }
+            
+            .confirmation-actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>PiSwap Exchange</h2>
-        <p>🚀 Our decentralized platform will launch once we reach the roadmap milestone! Stay tuned.</p>
-
-        <div class="swap-box">
-            <p>Exchange Pi Network Tokens</p>
-            <input type="text" class="swap-input" placeholder="Enter amount" disabled>
-            <button class="swap-btn" disabled>Swap (Coming Soon)</button>
+    <div class="scroll-container">
+        <button class="connect-wallet" id="connectWalletBtn">
+            <i class="fas fa-wallet"></i> Connect Wallet
+        </button>
+        
+        <div class="dex-header">
+            <h1 class="dex-title">Pi Swap</h1>
+            <div class="dex-switch">
+                <button class="dex-switch-btn active">Swap</button>
+                <button class="dex-switch-btn">Pool</button>
+            </div>
         </div>
-
-        <div class="maintenance-message">
-            ⚠️ **Platform is under maintenance.** Transactions are disabled until the official launch.
+        
+        <div class="swap-container">
+            <div class="swap-header">
+                <div class="swap-title">Swap Tokens</div>
+                <div class="swap-settings" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </div>
+            </div>
+            
+            <div class="token-input">
+                <div class="token-input-header">
+                    <span>From</span>
+                    <span>Balance: 10.5 π</span>
+                </div>
+                <div class="token-input-body">
+                    <input type="number" class="token-amount" placeholder="0.0" id="fromAmount">
+                    <div class="token-select" id="fromTokenSelect">
+                        <div class="token-icon">π</div>
+                        <span class="token-name">PI</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="swap-arrow">
+                <button class="swap-arrow-btn" id="switchTokensBtn">
+                    <i class="fas fa-arrow-down"></i>
+                </button>
+            </div>
+            
+            <div class="token-input">
+                <div class="token-input-header">
+                    <span>To</span>
+                    <span>Balance: 0.0</span>
+                </div>
+                <div class="token-input-body">
+                    <input type="number" class="token-amount" placeholder="0.0" id="toAmount" readonly>
+                    <div class="token-select" id="toTokenSelect">
+                        <div class="token-icon">$</div>
+                        <span class="token-name">USDT</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Price Chart Placeholder -->
+            <div class="price-chart"></div>
+            
+            <div class="swap-details">
+                <div class="swap-detail-row">
+                    <span>Exchange Rate</span>
+                    <span>1 π = 30.15 USDT</span>
+                </div>
+                <div class="swap-detail-row">
+                    <span>Price Impact</span>
+                    <span style="color: var(--warning-color)">0.5%</span>
+                </div>
+                <div class="swap-detail-row">
+                    <span>Minimum Received</span>
+                    <span>29.85 USDT</span>
+                </div>
+                <div class="swap-detail-row">
+                    <span>Liquidity Fee</span>
+                    <span>0.05 π</span>
+                </div>
+                <div class="swap-detail-row">
+                    <span>Route</span>
+                    <span>π → USDT</span>
+                </div>
+            </div>
+            
+            <button class="swap-button" id="swapButton">Swap</button>
+        </div>
+        
+        <!-- Button Links Section -->
+        <div class="button-links">
+            <a href="#" class="link-button" id="historyBtn">
+                <i class="fas fa-history"></i>
+                <span>Transaction History</span>
+            </a>
+            <a href="#" class="link-button" id="connectBtn">
+                <i class="fas fa-wallet"></i>
+                <span>Connect Wallet</span>
+            </a>
+            <a href="#" class="link-button" id="learnBtn">
+                <i class="fas fa-info-circle"></i>
+                <span>Learn to Swap</span>
+            </a>
+            <a href="#" class="link-button" id="favoritesBtn">
+                <i class="fas fa-star"></i>
+                <span>Favorite Pairs</span>
+            </a>
+        </div>
+        
+        <div class="bottom-menu">
+            <a href="#" class="menu-btn active">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Swap</span>
+            </a>
+            <a href="#" class="menu-btn">
+                <i class="fas fa-chart-line"></i>
+                <span>Stats</span>
+            </a>
+            <a href="#" class="menu-btn">
+                <i class="fas fa-coins"></i>
+                <span>Pools</span>
+            </a>
+            <a href="#" class="menu-btn">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
         </div>
     </div>
+    
+    <!-- Floating Action Button -->
+    <div class="fab-container" id="fabContainer">
+        <button class="fab-main" id="fabMain">
+            <i class="fas fa-bolt"></i>
+        </button>
+        <button class="fab-item" id="shareBtn">
+            <i class="fas fa-share-alt"></i>
+        </button>
+        <button class="fab-item" id="qrBtn">
+            <i class="fas fa-qrcode"></i>
+        </button>
+        <button class="fab-item" id="supportBtn">
+            <i class="fas fa-headset"></i>
+        </button>
+    </div>
+    
+    <!-- Token Select Modal -->
+    <div class="modal" id="tokenModal">
+        <div class="modal-content token-modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Select Token</h2>
+                <button class="close-modal" id="closeTokenModal">&times;</button>
+            </div>
+            <input type="text" class="search-token" placeholder="Search token name or paste address">
+            <div class="token-list-container">
+                <div class="token-category">
+                    <div class="token-category-title">Pi Network Tokens</div>
+                    <div class="token-item" data-token="PI">
+                        <div class="token-item-icon">π</div>
+                        <div class="token-item-details">
+                            <div class="token-item-name">PI</div>
+                            <div class="token-item-balance">Pi Network Token</div>
+                        </div>
+                    </div>
+                    <div class="token-item" data-token="USDT">
+                        <div class="token-item-icon">$</div>
+                        <div class="token-item-details">
+                            <div class="token-item-name">USDT</div>
+                            <div class="token-item-balance">Tether (Pi Network)</div>
+                        </div>
+                    </div>
+                    <div class="token-item" data-token="PSWAP">
+                        <div class="token-item-icon">P</div>
+                        <div class="token-item-details">
+                            <div class="token-item-name">PSWAP</div>
+                            <div class="token-item-balance">Pi Swap Token</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="token-category">
+                    <div class="token-category-title">Popular Tokens</div>
+                    <div class="token-item" data-token="BTC">
+                        <div class="token-item-icon">B</div>
+                        <div class="token-item-details">
+                            <div class="token-item-name">BTC</div>
+                            <div class="token-item-balance">Bitcoin</div>
+                        </div>
+                    </div>
+                    <div class="token-item" data-token="ETH">
+                        <div class="token-item-icon">E</div>
+                        <div class="token-item-details">
+                            <div class="token-item-name">ETH</div>
+                            <div class="token-item-balance">Ethereum</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Coming Soon Modal -->
+    <div class="modal coming-soon-modal" id="comingSoonModal">
+        <div class="modal-content">
+            <i class="fas fa-hourglass-half"></i>
+            <h3>Coming Soon</h3>
+            <p id="comingSoonMessage">This feature will be available when Pi Network opens its mainnet!</p>
+            <button class="close-modal" id="closeModalBtn">OK</button>
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div class="modal confirmation-modal" id="confirmationModal">
+        <div class="modal-content">
+            <div class="confirmation-header">
+                <div class="confirmation-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <h3 class="confirmation-title">Confirm Swap</h3>
+                <p class="confirmation-subtitle">Review your transaction details</p>
+            </div>
+            
+            <div class="confirmation-details">
+                <div class="confirmation-row">
+                    <span class="confirmation-label">From</span>
+                    <span class="confirmation-value" id="confirmFromAmount">1.0 π</span>
+                </div>
+                <div class="confirmation-row">
+                    <span class="confirmation-label">To</span>
+                    <span class="confirmation-value" id="confirmToAmount">30.15 USDT</span>
+                </div>
+                <div class="confirmation-row">
+                    <span class="confirmation-label">Exchange Rate</span>
+                    <span class="confirmation-value">1 π = 30.15 USDT</span>
+                </div>
+                <div class="confirmation-row">
+                    <span class="confirmation-label">Price Impact</span>
+                    <span class="confirmation-value" style="color: var(--warning-color)">0.5%</span>
+                </div>
+                <div class="confirmation-row">
+                    <span class="confirmation-label">Liquidity Fee</span>
+                    <span class="confirmation-value">0.05 π</span>
+                </div>
+            </div>
+            
+            <div class="confirmation-actions">
+                <button class="confirmation-btn confirmation-btn-secondary" id="cancelSwapBtn">Cancel</button>
+                <button class="confirmation-btn confirmation-btn-primary" id="confirmSwapBtn">Confirm Swap</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div class="modal settings-modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Swap Settings</h2>
+                <button class="close-modal" id="closeSettingsModal">&times;</button>
+            </div>
+            
+            <div class="settings-option">
+                <div>
+                    <div class="settings-label">Slippage Tolerance</div>
+                    <div class="settings-description">Your transaction will revert if the price changes unfavorably by more than this percentage</div>
+                </div>
+            </div>
+            
+            <div class="slippage-options">
+                <div class="slippage-option active">0.5%</div>
+                <div class="slippage-option">1%</div>
+                <div class="slippage-option">2%</div>
+                <input type="number" class="slippage-custom" placeholder="Custom" min="0" max="50" step="0.1">
+            </div>
+            
+            <div class="settings-option">
+                <div>
+                    <div class="settings-label">Transaction Deadline</div>
+                    <div class="settings-description">Your transaction will revert if it is pending for longer than this period</div>
+                </div>
+                <input type="number" class="slippage-custom" value="20" min="1" max="60"> <span>minutes</span>
+            </div>
+            
+            <div class="settings-option">
+                <div>
+                    <div class="settings-label">Expert Mode</div>
+                    <div class="settings-description">Allow high slippage trades that can result in significant losses</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="settings-option">
+                <div>
+                    <div class="settings-label">Multihops</div>
+                    <div class="settings-description">Allow trades through multiple routes for better prices</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="settings-option">
+                <div>
+                    <div class="settings-label">Sound Effects</div>
+                    <div class="settings-description">Play sounds for completed transactions</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Transaction Status Modal -->
+    <div class="modal status-modal" id="statusModal">
+        <div class="modal-content">
+            <div class="status-icon" id="statusIcon">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <h3 class="status-title" id="statusTitle">Processing Transaction</h3>
+            <p class="status-message" id="statusMessage">Your swap is being processed on the Pi Network blockchain.</p>
+            
+            <div class="status-action">
+                <button class="confirmation-btn confirmation-btn-primary" id="statusActionBtn">View Transaction</button>
+                <a href="#" class="status-link" id="statusLink">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>View on Explorer</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Token Select Modal Logic
+        const fromTokenSelect = document.getElementById('fromTokenSelect');
+        const toTokenSelect = document.getElementById('toTokenSelect');
+        const tokenModal = document.getElementById('tokenModal');
+        const closeTokenModal = document.getElementById('closeTokenModal');
+        const tokenItems = document.querySelectorAll('.token-item');
+        
+        let currentTokenSelect = null;
+        
+        [fromTokenSelect, toTokenSelect].forEach(element => {
+            element.addEventListener('click', () => {
+                tokenModal.style.display = 'flex';
+                currentTokenSelect = element.id === 'fromTokenSelect' ? 'from' : 'to';
+                document.body.style.overflow = 'hidden';
+            });
+        });
+        
+        closeTokenModal.addEventListener('click', () => {
+            tokenModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+        
+        // Token selection logic
+        tokenItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const token = item.getAttribute('data-token');
+                const tokenName = item.querySelector('.token-item-name').textContent;
+                const tokenIcon = item.querySelector('.token-item-icon').textContent;
+                
+                if (currentTokenSelect === 'from') {
+                    document.querySelector('#fromTokenSelect .token-icon').textContent = tokenIcon;
+                    document.querySelector('#fromTokenSelect .token-name').textContent = token;
+                } else {
+                    document.querySelector('#toTokenSelect .token-icon').textContent = tokenIcon;
+                    document.querySelector('#toTokenSelect .token-name').textContent = token;
+                }
+                
+                tokenModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+        });
+        
+        // FAB Logic
+        const fabContainer = document.getElementById('fabContainer');
+        const fabMain = document.getElementById('fabMain');
+        
+        fabMain.addEventListener('click', () => {
+            fabContainer.classList.toggle('open');
+        });
+        
+        // Swap button animation
+        const swapButton = document.getElementById('swapButton');
+        
+        swapButton.addEventListener('mouseenter', () => {
+            if (!swapButton.disabled) {
+                swapButton.style.transform = 'translateY(-3px)';
+                swapButton.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15)';
+            }
+        });
+        
+        swapButton.addEventListener('mouseleave', () => {
+            if (!swapButton.disabled) {
+                swapButton.style.transform = '';
+                swapButton.style.boxShadow = '';
+            }
+        });
+        
+        // Token amount input validation
+        const fromAmount = document.getElementById('fromAmount');
+        
+        fromAmount.addEventListener('input', (e) => {
+            // Simple validation - prevent negative numbers
+            if (e.target.value < 0) {
+                e.target.value = '';
+            }
+            
+            // Simulate conversion (in a real app, this would be an API call)
+            const toAmount = document.getElementById('toAmount');
+            if (e.target.value && !isNaN(e.target.value)) {
+                toAmount.value = (e.target.value * 30.15).toFixed(4);
+            } else {
+                toAmount.value = '';
+            }
+        });
+
+        // Coming Soon Modal Logic
+        const connectWalletBtn = document.getElementById('connectWalletBtn');
+        const comingSoonModal = document.getElementById('comingSoonModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const comingSoonMessage = document.getElementById('comingSoonMessage');
+        
+        // All buttons that should show coming soon modal
+        const comingSoonButtons = [
+            document.getElementById('connectBtn'),
+            document.getElementById('historyBtn'),
+            document.getElementById('learnBtn'),
+            document.getElementById('favoritesBtn'),
+            document.getElementById('shareBtn'),
+            document.getElementById('qrBtn'),
+            document.getElementById('supportBtn')
+        ];
+        
+        const comingSoonMessages = {
+            'connectBtn': 'Wallet connection feature will be available when Pi Network opens its mainnet!',
+            'historyBtn': 'Transaction history tracking is coming soon!',
+            'learnBtn': 'Educational resources are under development.',
+            'favoritesBtn': 'Favorite pairs feature is coming in the next update!',
+            'shareBtn': 'Share functionality will be implemented soon.',
+            'qrBtn': 'QR code scanner integration is in progress.',
+            'supportBtn': 'Customer support portal is under construction.'
+        };
+        
+        connectWalletBtn.addEventListener('click', function() {
+            comingSoonMessage.textContent = 'Wallet connection feature will be available when Pi Network opens its mainnet!';
+            comingSoonModal.style.display = "flex";
+            document.body.style.overflow = 'hidden';
+        });
+        
+        comingSoonButtons.forEach(btn => {
+            if (btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    comingSoonMessage.textContent = comingSoonMessages[btn.id] || 'This feature is coming soon!';
+                    comingSoonModal.style.display = "flex";
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+        });
+        
+        closeModalBtn.addEventListener('click', function() {
+            comingSoonModal.style.display = "none";
+            document.body.style.overflow = 'auto';
+        });
+        
+        // Switch tokens button
+        const switchTokensBtn = document.getElementById('switchTokensBtn');
+        
+        switchTokensBtn.addEventListener('click', function() {
+            const fromToken = document.querySelector('#fromTokenSelect .token-name').textContent;
+            const fromIcon = document.querySelector('#fromTokenSelect .token-icon').textContent;
+            const toToken = document.querySelector('#toTokenSelect .token-name').textContent;
+            const toIcon = document.querySelector('#toTokenSelect .token-icon').textContent;
+            
+            // Swap tokens
+            document.querySelector('#fromTokenSelect .token-name').textContent = toToken;
+            document.querySelector('#fromTokenSelect .token-icon').textContent = toIcon;
+            document.querySelector('#toTokenSelect .token-name').textContent = fromToken;
+            document.querySelector('#toTokenSelect .token-icon').textContent = fromIcon;
+            
+            // Swap amounts if they exist
+            const fromAmount = document.getElementById('fromAmount').value;
+            const toAmount = document.getElementById('toAmount').value;
+            
+            if (fromAmount && toAmount) {
+                document.getElementById('fromAmount').value = toAmount;
+                document.getElementById('toAmount').value = fromAmount;
+            }
+        });
+        
+        // Settings Modal
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettingsModal = document.getElementById('closeSettingsModal');
+        
+        settingsBtn.addEventListener('click', function() {
+            settingsModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        });
+        
+        closeSettingsModal.addEventListener('click', function() {
+            settingsModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+        
+        // Slippage options
+        const slippageOptions = document.querySelectorAll('.slippage-option');
+        const slippageCustom = document.querySelector('.slippage-custom');
+        
+        slippageOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove active class from all options
+                slippageOptions.forEach(opt => opt.classList.remove('active'));
+                // Add active class to clicked option
+                this.classList.add('active');
+                // Clear custom input
+                slippageCustom.value = '';
+            });
+        });
+        
+        slippageCustom.addEventListener('focus', function() {
+            // Remove active class from all options when custom is focused
+            slippageOptions.forEach(opt => opt.classList.remove('active'));
+        });
+        
+        // Swap Confirmation Modal
+        const confirmationModal = document.getElementById('confirmationModal');
+        const cancelSwapBtn = document.getElementById('cancelSwapBtn');
+        const confirmSwapBtn = document.getElementById('confirmSwapBtn');
+        
+        swapButton.addEventListener('click', function() {
+            const fromAmount = document.getElementById('fromAmount').value;
+            const toAmount = document.getElementById('toAmount').value;
+            const fromToken = document.querySelector('#fromTokenSelect .token-name').textContent;
+            const toToken = document.querySelector('#toTokenSelect .token-name').textContent;
+            
+            if (!fromAmount || parseFloat(fromAmount) <= 0) {
+                showStatusModal('error', 'Invalid Amount', 'Please enter a valid amount to swap.');
+                return;
+            }
+            
+            document.getElementById('confirmFromAmount').textContent = `${fromAmount} ${fromToken}`;
+            document.getElementById('confirmToAmount').textContent = `${toAmount} ${toToken}`;
+            
+            confirmationModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        });
+        
+        cancelSwapBtn.addEventListener('click', function() {
+            confirmationModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+        
+        confirmSwapBtn.addEventListener('click', function() {
+            confirmationModal.style.display = 'none';
+            simulateTransaction();
+        });
+        
+        // Status Modal
+        const statusModal = document.getElementById('statusModal');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusMessage = document.getElementById('statusMessage');
+        const statusActionBtn = document.getElementById('statusActionBtn');
+        const statusLink = document.getElementById('statusLink');
+        
+        function showStatusModal(type, title, message, actionText = 'View Transaction') {
+            // Reset icon classes
+            statusIcon.className = 'status-icon';
+            statusIcon.classList.add('status-icon');
+            
+            if (type === 'success') {
+                statusIcon.innerHTML = '<i class="fas fa-check"></i>';
+                statusIcon.style.background = 'var(--success-color)';
+            } else if (type === 'error') {
+                statusIcon.innerHTML = '<i class="fas fa-times"></i>';
+                statusIcon.style.background = 'var(--error-color)';
+                statusIcon.classList.add('error');
+            } else if (type === 'warning') {
+                statusIcon.innerHTML = '<i class="fas fa-exclamation"></i>';
+                statusIcon.style.background = 'var(--warning-color)';
+                statusIcon.classList.add('warning');
+            } else {
+                // Loading
+                statusIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                statusIcon.style.background = 'var(--pi-primary)';
+            }
+            
+            statusTitle.textContent = title;
+            statusMessage.textContent = message;
+            statusActionBtn.textContent = actionText;
+            
+            statusModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function simulateTransaction() {
+            // Show processing state
+            showStatusModal('loading', 'Processing Transaction', 'Your swap is being processed on the Pi Network blockchain.');
+            
+            // Simulate network delay
+            setTimeout(() => {
+                // 80% chance of success, 15% warning, 5% error (for demo purposes)
+                const random = Math.random();
+                
+                if (random < 0.8) {
+                    // Success
+                    showStatusModal(
+                        'success', 
+                        'Swap Completed!', 
+                        'Your transaction was successfully processed on the Pi Network blockchain.',
+                        'Done'
+                    );
+                    
+                    statusActionBtn.addEventListener('click', function() {
+                        statusModal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }, { once: true });
+                    
+                    statusLink.style.display = 'flex';
+                } else if (random < 0.95) {
+                    // Warning
+                    showStatusModal(
+                        'warning', 
+                        'Swap Completed with Slippage', 
+                        'Your transaction was completed but with a higher price impact than expected due to market conditions.',
+                        'OK'
+                    );
+                    
+                    statusActionBtn.addEventListener('click', function() {
+                        statusModal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }, { once: true });
+                    
+                    statusLink.style.display = 'flex';
+                } else {
+                    // Error
+                    showStatusModal(
+                        'error', 
+                        'Transaction Failed', 
+                        'The transaction could not be completed. This may be due to insufficient liquidity or network congestion.',
+                        'Try Again'
+                    );
+                    
+                    statusActionBtn.addEventListener('click', function() {
+                        statusModal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                        // Show confirmation modal again
+                        confirmationModal.style.display = 'flex';
+                    }, { once: true });
+                    
+                    statusLink.style.display = 'none';
+                }
+            }, 3000);
+        }
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Close modals with Escape key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                const openModals = document.querySelectorAll('.modal[style="display: flex;"]');
+                if (openModals.length > 0) {
+                    openModals.forEach(modal => {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    });
+                }
+            }
+        });
+    </script>
 </body>
-</html>
+                </html>
