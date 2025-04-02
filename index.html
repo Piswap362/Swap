@@ -7,13 +7,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
-            --pi-primary: #1EC0C0;  /* Pi Network teal */
-            --pi-secondary: #2ECC71; /* Pi Network green */
-            --pi-accent: #F39C12;   /* Pi Network orange */
-            --pi-dark: #1A3A4F;     /* Dark blue from Pi Network */
-            --pi-light: #E8F4F8;    /* Light background from Pi Network */
+            --pi-primary: #1EC0C0;
+            --pi-secondary: #2ECC71;
+            --pi-accent: #F39C12;
+            --pi-dark: #1A3A4F;
+            --pi-light: #E8F4F8;
             --text-light: #FFFFFF;
-            --text-dark: #2C3E50;   /* Dark text from Pi Network */
+            --text-dark: #2C3E50;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
             --success-color: #4CAF50;
@@ -22,171 +22,6 @@
             --gradient-primary: linear-gradient(135deg, var(--pi-primary) 0%, var(--pi-accent) 100%);
             --gradient-dark: linear-gradient(135deg, var(--pi-dark) 0%, var(--pi-primary) 100%);
             --modal-backdrop: rgba(0, 0, 0, 0.8);
-        }
-        
-        /* Floating Action Button */
-        .fab-container {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            z-index: 1001;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 15px;
-        }
-        
-        .fab-main {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            color: var(--pi-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-        }
-        
-        .fab-main:hover {
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-        }
-        
-        .fab-item {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--gradient-dark);
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: var(--transition);
-            opacity: 0;
-            transform: translateY(20px);
-            pointer-events: none;
-        }
-        
-        .fab-container.open .fab-item {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-        
-        .fab-item:nth-child(1) { transition-delay: 0ms; }
-        .fab-item:nth-child(2) { transition-delay: 50ms; }
-        .fab-item:nth-child(3) { transition-delay: 100ms; }
-        
-        /* Button Links Section */
-        .button-links {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin: 20px 0;
-        }
-        
-        .link-button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(30, 192, 192, 0.3);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-light);
-            transition: var(--transition);
-        }
-        
-        .link-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-        }
-        
-        .link-button i {
-            font-size: 20px;
-            margin-bottom: 8px;
-            color: var(--pi-accent);
-        }
-        
-        .link-button span {
-            font-size: 14px;
-            text-align: center;
-        }
-        
-        /* Enhanced Token Select Modal */
-        .token-modal .modal-content {
-            max-height: 70vh;
-            display: flex;
-            flex-direction: column;
-            width: 90%;
-            max-width: 350px;
-        }
-        
-        .token-list-container {
-            overflow-y: auto;
-            flex: 1;
-            margin-top: 15px;
-            max-height: 50vh;
-        }
-        
-        .token-category {
-            margin-bottom: 15px;
-        }
-        
-        .token-category-title {
-            font-size: 14px;
-            opacity: 0.7;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        /* Price Chart Placeholder */
-        .price-chart {
-            height: 120px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            margin: 20px 0;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .price-chart::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-            animation: shimmer 2s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        
-        /* Swap Details */
-        .swap-detail-row {
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-        }
-        
-        .swap-detail-row:last-child {
-            border-bottom: none;
         }
         
         body {
@@ -420,6 +255,18 @@
             margin-top: 15px;
         }
         
+        .swap-detail-row {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        
+        .swap-detail-row:last-child {
+            border-bottom: none;
+        }
+        
         .swap-button {
             background: var(--gradient-primary);
             color: var(--pi-dark);
@@ -587,7 +434,6 @@
             border-radius: 3px;
         }
         
-        /* Enhanced Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -689,7 +535,6 @@
             border-color: var(--pi-primary);
         }
         
-        /* Coming Soon Modal Specific Styles */
         .coming-soon-modal .modal-content {
             text-align: center;
             padding: 30px;
@@ -711,7 +556,6 @@
             line-height: 1.5;
         }
         
-        /* Transaction Confirmation Modal */
         .confirmation-modal .modal-content {
             max-width: 380px;
         }
@@ -804,7 +648,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
-        /* Settings Modal */
         .settings-modal .modal-content {
             max-width: 380px;
         }
@@ -876,7 +719,6 @@
             transform: translateX(26px);
         }
         
-        /* Slippage Settings */
         .slippage-options {
             display: flex;
             gap: 8px;
@@ -915,7 +757,6 @@
             border-color: var(--pi-primary);
         }
         
-        /* Transaction Status Modal */
         .status-modal .modal-content {
             max-width: 380px;
             text-align: center;
@@ -972,7 +813,102 @@
             text-decoration: underline;
         }
         
-        /* Responsive adjustments */
+        .fab-container {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 15px;
+        }
+        
+        .fab-main {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            color: var(--pi-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+        
+        .fab-main:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .fab-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-dark);
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+        
+        .fab-container.open .fab-item {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        .fab-item:nth-child(1) { transition-delay: 0ms; }
+        .fab-item:nth-child(2) { transition-delay: 50ms; }
+        .fab-item:nth-child(3) { transition-delay: 100ms; }
+        
+        .button-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .link-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(30, 192, 192, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+        
+        .link-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .link-button i {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--pi-accent);
+        }
+        
+        .link-button span {
+            font-size: 14px;
+            text-align: center;
+        }
+        
         @media (max-width: 350px) {
             .dex-header {
                 flex-direction: column;
@@ -1058,9 +994,6 @@
                 </div>
             </div>
             
-            <!-- Price Chart Placeholder -->
-            <div class="price-chart"></div>
-            
             <div class="swap-details">
                 <div class="swap-detail-row">
                     <span>Exchange Rate</span>
@@ -1087,7 +1020,6 @@
             <button class="swap-button" id="swapButton">Swap</button>
         </div>
         
-        <!-- Button Links Section -->
         <div class="button-links">
             <a href="#" class="link-button" id="historyBtn">
                 <i class="fas fa-history"></i>
@@ -1108,26 +1040,25 @@
         </div>
         
         <div class="bottom-menu">
-            <a href="#" class="menu-btn active">
+            <a href="https://piswap362.github.io/Swap/" class="menu-btn active">
                 <i class="fas fa-exchange-alt"></i>
                 <span>Swap</span>
             </a>
-            <a href="#" class="menu-btn">
+            <a href="https://piswap362.github.io/Stats/" class="menu-btn">
                 <i class="fas fa-chart-line"></i>
                 <span>Stats</span>
             </a>
-            <a href="#" class="menu-btn">
+            <a href="https://piswap362.github.io/Pools/" class="menu-btn">
                 <i class="fas fa-coins"></i>
                 <span>Pools</span>
             </a>
-            <a href="#" class="menu-btn">
+            <a href="https://piswap362.github.io/Profil/" class="menu-btn">
                 <i class="fas fa-user"></i>
                 <span>Profile</span>
             </a>
         </div>
     </div>
     
-    <!-- Floating Action Button -->
     <div class="fab-container" id="fabContainer">
         <button class="fab-main" id="fabMain">
             <i class="fas fa-bolt"></i>
@@ -1143,7 +1074,6 @@
         </button>
     </div>
     
-    <!-- Token Select Modal -->
     <div class="modal" id="tokenModal">
         <div class="modal-content token-modal">
             <div class="modal-header">
@@ -1197,7 +1127,6 @@
         </div>
     </div>
     
-    <!-- Coming Soon Modal -->
     <div class="modal coming-soon-modal" id="comingSoonModal">
         <div class="modal-content">
             <i class="fas fa-hourglass-half"></i>
@@ -1207,7 +1136,6 @@
         </div>
     </div>
     
-    <!-- Confirmation Modal -->
     <div class="modal confirmation-modal" id="confirmationModal">
         <div class="modal-content">
             <div class="confirmation-header">
@@ -1248,7 +1176,6 @@
         </div>
     </div>
     
-    <!-- Settings Modal -->
     <div class="modal settings-modal" id="settingsModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1313,7 +1240,6 @@
         </div>
     </div>
     
-    <!-- Transaction Status Modal -->
     <div class="modal status-modal" id="statusModal">
         <div class="modal-content">
             <div class="status-icon" id="statusIcon">
@@ -1404,12 +1330,10 @@
         const fromAmount = document.getElementById('fromAmount');
         
         fromAmount.addEventListener('input', (e) => {
-            // Simple validation - prevent negative numbers
             if (e.target.value < 0) {
                 e.target.value = '';
             }
             
-            // Simulate conversion (in a real app, this would be an API call)
             const toAmount = document.getElementById('toAmount');
             if (e.target.value && !isNaN(e.target.value)) {
                 toAmount.value = (e.target.value * 30.15).toFixed(4);
@@ -1424,7 +1348,6 @@
         const closeModalBtn = document.getElementById('closeModalBtn');
         const comingSoonMessage = document.getElementById('comingSoonMessage');
         
-        // All buttons that should show coming soon modal
         const comingSoonButtons = [
             document.getElementById('connectBtn'),
             document.getElementById('historyBtn'),
@@ -1476,13 +1399,11 @@
             const toToken = document.querySelector('#toTokenSelect .token-name').textContent;
             const toIcon = document.querySelector('#toTokenSelect .token-icon').textContent;
             
-            // Swap tokens
             document.querySelector('#fromTokenSelect .token-name').textContent = toToken;
             document.querySelector('#fromTokenSelect .token-icon').textContent = toIcon;
             document.querySelector('#toTokenSelect .token-name').textContent = fromToken;
             document.querySelector('#toTokenSelect .token-icon').textContent = fromIcon;
             
-            // Swap amounts if they exist
             const fromAmount = document.getElementById('fromAmount').value;
             const toAmount = document.getElementById('toAmount').value;
             
@@ -1513,17 +1434,13 @@
         
         slippageOptions.forEach(option => {
             option.addEventListener('click', function() {
-                // Remove active class from all options
                 slippageOptions.forEach(opt => opt.classList.remove('active'));
-                // Add active class to clicked option
                 this.classList.add('active');
-                // Clear custom input
                 slippageCustom.value = '';
             });
         });
         
         slippageCustom.addEventListener('focus', function() {
-            // Remove active class from all options when custom is focused
             slippageOptions.forEach(opt => opt.classList.remove('active'));
         });
         
@@ -1569,7 +1486,6 @@
         const statusLink = document.getElementById('statusLink');
         
         function showStatusModal(type, title, message, actionText = 'View Transaction') {
-            // Reset icon classes
             statusIcon.className = 'status-icon';
             statusIcon.classList.add('status-icon');
             
@@ -1585,7 +1501,6 @@
                 statusIcon.style.background = 'var(--warning-color)';
                 statusIcon.classList.add('warning');
             } else {
-                // Loading
                 statusIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                 statusIcon.style.background = 'var(--pi-primary)';
             }
@@ -1599,16 +1514,12 @@
         }
         
         function simulateTransaction() {
-            // Show processing state
             showStatusModal('loading', 'Processing Transaction', 'Your swap is being processed on the Pi Network blockchain.');
             
-            // Simulate network delay
             setTimeout(() => {
-                // 80% chance of success, 15% warning, 5% error (for demo purposes)
                 const random = Math.random();
                 
                 if (random < 0.8) {
-                    // Success
                     showStatusModal(
                         'success', 
                         'Swap Completed!', 
@@ -1623,7 +1534,6 @@
                     
                     statusLink.style.display = 'flex';
                 } else if (random < 0.95) {
-                    // Warning
                     showStatusModal(
                         'warning', 
                         'Swap Completed with Slippage', 
@@ -1638,7 +1548,6 @@
                     
                     statusLink.style.display = 'flex';
                 } else {
-                    // Error
                     showStatusModal(
                         'error', 
                         'Transaction Failed', 
@@ -1649,7 +1558,6 @@
                     statusActionBtn.addEventListener('click', function() {
                         statusModal.style.display = 'none';
                         document.body.style.overflow = 'auto';
-                        // Show confirmation modal again
                         confirmationModal.style.display = 'flex';
                     }, { once: true });
                     
@@ -1680,4 +1588,4 @@
         });
     </script>
 </body>
-                </html>
+</html>
